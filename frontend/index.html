@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Secure Message</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="background"></div>
+  <div class="overlay"></div>
+  <div class="container" id="app">
+
+    <!-- Create Form -->
+    <div id="createForm">
+      <img src="assets/logo/SwissCloudHost_Logo_1.png" width="100" style="display: block; margin: 0 auto;" alt="Logo" class="logo" />
+      <h1>🔐 Create Secure Message</h1>
+      <textarea id="message" placeholder="Your secret message..."></textarea>
+      <input type="password" id="password" placeholder="Optional password" />
+      <select id="expiry">
+        <option value="300">5 minutes</option>
+        <option value="3600">1 hour</option>
+        <option value="86400">1 day</option>
+        <option value="604800">1 week</option>
+        <option value="2592000">1 month</option>
+      </select>
+      <button id="create">Create Secure Link</button>
+      <br><br><br>
+      <div id="linkContainer" class="hidden">
+        <input type="text" id="link" readonly />
+        <button id="copy">📋 Copy Link</button>
+      </div>
+    </div>
+
+    <!-- Read Message -->
+    <div id="readForm" class="hidden">
+      <h1>📥 Decrypt Secure Message</h1>
+      <input type="password" id="readPassword" placeholder="Enter password (if required)" />
+      <button id="decrypt">Decrypt Message</button>
+      <pre id="plaintext" class="hidden"></pre>
+    </div>
+
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

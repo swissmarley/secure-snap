@@ -1,0 +1,34 @@
+service: secure-messaging-app
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-central-1
+  environment:
+    PGHOST: ${env:PGHOST}
+    PGUSER: ${env:PGUSER}
+    PGPASSWORD: ${env:PGPASSWORD}
+    PGDATABASE: ${env:PGDATABASE}
+    PGPORT: ${env:PGPORT}
+    REDIS_HOST: ${env:REDIS_HOST}
+    REDIS_PORT: ${env:REDIS_PORT}
+
+functions:
+  createMessage:
+    handler: functions/createMessage.handler
+    events:
+      - http:
+          path: create
+          method: post
+  getMessage:
+    handler: functions/getMessage.handler
+    events:
+      - http:
+          path: message/{id}
+          method: get
+  deleteMessage:
+    handler: functions/deleteMessage.handler
+    events:
+      - http:
+          path: message/{id}
+          method: delete

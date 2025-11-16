@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS messages (
+  id UUID PRIMARY KEY,
+  ciphertext TEXT NOT NULL,
+  salt TEXT NOT NULL,
+  iv TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  expiry INTEGER NOT NULL
+);

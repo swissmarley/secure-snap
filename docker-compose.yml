@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7
+    container_name: securesnap_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - securesnap-net
+
+  backend:
+    build:
+      context: ./backend
+    container_name: securesnap_backend
+    restart: unless-stopped
+    environment:
+      PGHOST: ${PGHOST}
+      PGUSER: ${PGUSER}
+      PGPASSWORD: ${PGPASSWORD}
+      PGDATABASE: ${PGDATABASE}
+      PGPORT: ${PGPORT}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+    depends_on:
+      - redis
+    ports:
+      - "3993:3000"
+    networks:
+      - securesnap-net
+    volumes:
+      - ./backend:/usr/src/app
+    command: sh -c "node db/init.js && node index.js"
+
+  frontend:
+    image: nginx:1.25
+    container_name: securesnap_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8993:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - securesnap-net
+
+volumes:
+  pgdata:
+
+networks:
+  securesnap-net:
+    driver: bridge
