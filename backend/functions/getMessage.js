@@ -1,17 +1,33 @@
-require('dotenv').config({ path: '../.env.local' });
 const { Pool } = require('pg');
 const Redis = require('ioredis');
+const {
+  loadEnvironment,
+  getDbConfig,
+  getRedisConfig,
+  getMissingVars
+} = require('../config');
 
-const pool = new Pool({
-  user: process.env.PGUSER,
-  host: process.env.PGHOST,
-  database: process.env.PGDATABASE,
-  password: process.env.PGPASSWORD,
-  port: process.env.PGPORT
-});
-const redis = new Redis();
+loadEnvironment();
+
+const missingEnvVars = getMissingVars();
+const missingEnvMessage = missingEnvVars.length
+  ? `Missing environment variables: ${missingEnvVars.join(', ')}`
+  : null;
+
+let pool = null;
+let redis = null;
+
+if (!missingEnvMessage) {
+  pool = new Pool(getDbConfig());
+  redis = new Redis(getRedisConfig());
+}
 
 module.exports.handler = async (req, res) => {
+  if (missingEnvMessage) {
+    console.error(missingEnvMessage);
+    return res.status(500).json({ error: missingEnvMessage });
+  }
+
   try {
     const id = req.params.id;
 

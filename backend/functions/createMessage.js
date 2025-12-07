@@ -1,35 +1,48 @@
-require('dotenv').config({ path: require('path').resolve(__dirname, '../.env.local') });
 const { Pool } = require('pg');
 const Redis = require('ioredis');
 const { v4: uuidv4 } = require('uuid');
+const {
+  loadEnvironment,
+  getDbConfig,
+  getRedisConfig,
+  getMissingVars
+} = require('../config');
 
-console.log('Config DB:', {
-  user: process.env.PGUSER,
-  host: process.env.PGHOST,
-  database: process.env.PGDATABASE,
-  port: process.env.PGPORT
-});
+loadEnvironment();
 
-const pool = new Pool({
-  user: process.env.PGUSER,
-  host: process.env.PGHOST,
-  database: process.env.PGDATABASE,
-  password: process.env.PGPASSWORD,
-  port: process.env.PGPORT
-});
+const missingEnvVars = getMissingVars();
+const missingEnvMessage = missingEnvVars.length
+  ? `Missing environment variables: ${missingEnvVars.join(', ')}`
+  : null;
 
-// Test connessione
-pool.query('SELECT NOW()', (err, res) => {
-  if (err) {
-    console.error('Errore connessione PostgreSQL:', err);
-  } else {
-    console.log('PostgreSQL connesso correttamente');
-  }
-});
+if (!missingEnvMessage) {
+  console.log('Config DB:', getDbConfig());
+}
 
-const redis = new Redis();
+let pool = null;
+let redis = null;
+
+if (!missingEnvMessage) {
+  pool = new Pool(getDbConfig());
+
+  // Test connessione
+  pool.query('SELECT NOW()', (err, res) => {
+    if (err) {
+      console.error('Errore connessione PostgreSQL:', err);
+    } else {
+      console.log('PostgreSQL connesso correttamente');
+    }
+  });
+
+  redis = new Redis(getRedisConfig());
+}
 
 module.exports.handler = async (req, res) => {
+  if (missingEnvMessage) {
+    console.error(missingEnvMessage);
+    return res.status(500).json({ error: missingEnvMessage });
+  }
+
   try {
     const { ciphertext, salt, iv, expiry } = req.body;
 

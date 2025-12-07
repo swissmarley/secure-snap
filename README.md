@@ -85,6 +85,8 @@ The application will be available at:
 - **Frontend**: http://localhost:8993
 - **Backend API**: http://localhost:3993
 
+> The backend service mounts your local source but keeps the image-installed `node_modules` inside a dedicated `backend_node_modules` volume so dependencies installed during build are not wiped out by the host bind mount.
+
 ## Local Development
 
 ### Backend Setup
@@ -243,6 +245,15 @@ python3 -m http.server 8000
 ### Frontend Can't Connect to Backend
 - Update `backendURL` in `frontend/app.js` to match your backend URL
 - Ensure CORS is properly configured
+
+### Encryption Requires a Secure Context
+- If you hit `Cannot read properties of undefined (reading 'importKey')` while creating or decrypting a link, open the frontend over `https://` or `http://localhost:8993`, because `crypto.subtle` is only available in secure contexts.
+
+### Backend URL for Hosted Frontend
+- The frontend now detects the backend automatically (it defaults to `http://localhost:3000` during local development and switches to relative `/create`/`/message` requests once the app is on any other domain). If your deployment exposes the API under a different hostname/port, inject `window.__BACKEND_URL__` before `app.js` loads (for example, add `<script>window.__BACKEND_URL__ = 'https://api.example.com';</script>` to `frontend/index.html`) so fetches still succeed and browsers stop blocking mixed-content requests.
+
+### Backend Environment Variables
+- When you see `Server error` in the browser or the backend logs report `Missing environment variables: …`, make sure `PGHOST`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`, `PGPORT`, `REDIS_HOST`, and `REDIS_PORT` are defined. Docker Compose pulls those values from the `.env` file in the repository root, so copy `backend/.env.example` to `.env`, fill in your PostgreSQL/Redis credentials, and restart the stack before trying again.
 
 ## Performance Considerations
 
