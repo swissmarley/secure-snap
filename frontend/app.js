@@ -1,4 +1,6 @@
-const backendURL = 'http://localhost:3000'; // Change to your deployed URL
+const backendURL =
+  window.__BACKEND_URL__ ??
+  (window.location.hostname === 'localhost' ? 'http://localhost:3000' : '');
 
 const cryptoSource = window.crypto || window.msCrypto;
 const subtleCrypto = cryptoSource?.subtle || cryptoSource?.webkitSubtle;

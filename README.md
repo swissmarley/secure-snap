@@ -249,6 +249,9 @@ python3 -m http.server 8000
 ### Encryption Requires a Secure Context
 - If you hit `Cannot read properties of undefined (reading 'importKey')` while creating or decrypting a link, open the frontend over `https://` or `http://localhost:8993`, because `crypto.subtle` is only available in secure contexts.
 
+### Backend URL for Hosted Frontend
+- The frontend now detects the backend automatically (it defaults to `http://localhost:3000` during local development and switches to relative `/create`/`/message` requests once the app is on any other domain). If your deployment exposes the API under a different hostname/port, inject `window.__BACKEND_URL__` before `app.js` loads (for example, add `<script>window.__BACKEND_URL__ = 'https://api.example.com';</script>` to `frontend/index.html`) so fetches still succeed and browsers stop blocking mixed-content requests.
+
 ## Performance Considerations
 
 - **Redis Caching**: Message metadata cached in Redis for fast lookups
