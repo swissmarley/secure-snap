@@ -13,7 +13,7 @@ const pool = new Pool({
 
 (async () => {
   try {
-    const schemaPath = path.resolve(__dirname, 'schema.sql');
+    const schemaPath = path.resolve(__dirname, 'init.sql');
     const schema = fs.readFileSync(schemaPath, 'utf8');
     await pool.query(schema);
     console.log('Database initialized.');

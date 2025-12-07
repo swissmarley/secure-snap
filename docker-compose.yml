@@ -10,21 +10,35 @@ services:
     networks:
       - securesnap-net
 
+  postgres:
+    image: postgres:15-alpine
+    container_name: securesnap_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_DB: ${PGDATABASE}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - securesnap-net
+
   backend:
     build:
       context: ./backend
     container_name: securesnap_backend
     restart: unless-stopped
     environment:
-      PGHOST: ${PGHOST}
+      PGHOST: postgres
       PGUSER: ${PGUSER}
       PGPASSWORD: ${PGPASSWORD}
       PGDATABASE: ${PGDATABASE}
-      PGPORT: ${PGPORT}
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
+      PGPORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     depends_on:
       - redis
+      - postgres
     ports:
       - "3993:3000"
     networks:
