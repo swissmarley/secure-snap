@@ -71,6 +71,9 @@ window.addEventListener('DOMContentLoaded', async () => {
       });
 
       const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error ?? 'Failed to create secure link');
+      }
       const link = `${window.location.origin}?id=${data.id}`;
 
       document.getElementById('link').value = link;
