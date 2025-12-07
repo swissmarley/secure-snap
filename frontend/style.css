@@ -95,6 +95,17 @@ button:hover {
   display: none;
 }
 
+.crypto-warning {
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: rgba(255, 69, 58, 0.12);
+  color: #ffdede;
+  border: 1px solid rgba(255, 69, 58, 0.35);
+  text-align: center;
+  font-size: 0.95rem;
+}
+
 .overlay {
   position: fixed;
   top: 0;

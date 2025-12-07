@@ -85,6 +85,8 @@ The application will be available at:
 - **Frontend**: http://localhost:8993
 - **Backend API**: http://localhost:3993
 
+> The backend service mounts your local source but keeps the image-installed `node_modules` inside a dedicated `backend_node_modules` volume so dependencies installed during build are not wiped out by the host bind mount.
+
 ## Local Development
 
 ### Backend Setup
@@ -243,6 +245,9 @@ python3 -m http.server 8000
 ### Frontend Can't Connect to Backend
 - Update `backendURL` in `frontend/app.js` to match your backend URL
 - Ensure CORS is properly configured
+
+### Encryption Requires a Secure Context
+- If you hit `Cannot read properties of undefined (reading 'importKey')` while creating or decrypting a link, open the frontend over `https://` or `http://localhost:8993`, because `crypto.subtle` is only available in secure contexts.
 
 ## Performance Considerations
 
